@@ -3,7 +3,7 @@ name: sync-strava-via-icu-web
 on:
   schedule:
     # every 30 min, offset minutes to avoid the :00/:30 cluster delay
-    - cron: "2,32 * * * *"
+    - cron: "17,47 * * * *"
   workflow_dispatch:
     inputs:
       lookback_days:
@@ -20,7 +20,7 @@ permissions:
 
 concurrency:
   group: icu-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   sync:
