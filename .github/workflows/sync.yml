@@ -1,0 +1,47 @@
+name: sync-strava-via-icu-web
+
+on:
+  schedule:
+    # every 30 min, offset minutes to avoid the :00/:30 cluster delay
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "Days back to scan"
+        required: false
+        default: "7"
+      activity_types:
+        description: "Comma-separated types (empty = no filter)"
+        required: false
+        default: "Ride"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: icu-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: run sync
+        env:
+          ICU_EMAIL: ${{ secrets.ICU_EMAIL }}
+          ICU_PASSWORD: ${{ secrets.ICU_PASSWORD }}
+          ICU_API_KEY: ${{ secrets.ICU_API_KEY }}
+          ICU_ATHLETE_ID: ${{ secrets.ICU_ATHLETE_ID }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '7' }}
+          ACTIVITY_TYPES: ${{ github.event.inputs.activity_types || 'Ride' }}
+        run: python sync.py
