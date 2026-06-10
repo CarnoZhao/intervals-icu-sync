@@ -13,7 +13,7 @@ on:
       activity_types:
         description: "Comma-separated types (empty = no filter)"
         required: false
-        default: "Ride"
+        default: "Ride,VirtualRide"
 
 permissions:
   contents: read
@@ -43,5 +43,5 @@ jobs:
           ICU_API_KEY: ${{ secrets.ICU_API_KEY }}
           ICU_ATHLETE_ID: ${{ secrets.ICU_ATHLETE_ID }}
           LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '7' }}
-          ACTIVITY_TYPES: ${{ github.event.inputs.activity_types || 'Ride' }}
+          ACTIVITY_TYPES: ${{ github.event.inputs.activity_types || 'Ride,VirtualRide' }}
         run: python sync.py
